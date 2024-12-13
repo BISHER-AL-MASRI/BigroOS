@@ -6,6 +6,16 @@
 #define MAX_INPUT_SIZE 256
 #define MAX_HISTORY_SIZE 10 
 
+const char* all_commands[] = {
+    "echo",
+    "amogus", 
+    "flappy",
+    "clear",
+    "help",
+    "bigroos",
+    NULL
+};
+
 typedef struct { 
     char command[MAX_INPUT_SIZE];
 } CommandHistory;
@@ -99,6 +109,24 @@ void user_input(char c) {
         }
         return;
     } 
+
+    if (c == '\t') {
+        input_buffer[input_position] = '\0';
+        for (int i = 0; all_commands[i] != NULL; i++) {
+            if (starts_with(all_commands[i], input_buffer)) {
+                while (input_position > 0) {
+                    terminal_backspace();
+                    input_position--;
+                }
+                strcpy(input_buffer, all_commands[i]);
+                input_position = strlen(input_buffer);
+                terminal_writestring(input_buffer);
+                break;
+            }
+        }
+        return;
+    }
+
     else if (c == KEY_DOWN) {  
         if (history_position >= 0) {
             while (input_position > 0) {
@@ -152,9 +180,9 @@ void user_input(char c) {
 void execute_command(const char* command) {
     if (compare_strings(command, "clear") == 0) {
         terminal_initialize(); 
-    } else if (starts_with(command, "echo ")) {
+    } else if (starts_with(command, "echo")) {
         terminal_writestring("\n");
-        terminal_writestring(command + 5);
+        terminal_writestring(command + 6);
         terminal_writestring("\n");
     } else if (compare_strings(command, "amogus") == 0) {
         terminal_writestring(amogus);
