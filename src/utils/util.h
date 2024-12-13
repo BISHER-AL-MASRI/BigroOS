@@ -1,5 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
+#include "string_utils.h"
+
 
 #define CONCAT_IMPL(x, y) x##y
 #define CONCAT(x, y) CONCAT_IMPL(x, y)
@@ -164,6 +166,5 @@ static inline unsigned int strlcpy(char *dst, const char *src, unsigned int n) {
 char shift_char(char ch);
 
 // Add include for string functions
-#include "string_utils.h"
 
 #endif

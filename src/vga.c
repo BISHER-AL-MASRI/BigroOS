@@ -11,7 +11,7 @@ uint16_t* terminal_buffer;
 void terminal_initialize(void) {
     terminal_row = 0;
     terminal_column = 0;
-    terminal_color = vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_DARK_GREY);
+    terminal_color = vga_entry_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     terminal_buffer = (uint16_t*) 0xB8000;
     for (size_t y = 0; y < VGA_HEIGHT; y++) {
         for (size_t x = 0; x < VGA_WIDTH; x++) {
@@ -19,7 +19,7 @@ void terminal_initialize(void) {
             terminal_buffer[index] = vga_entry(' ', terminal_color);
         }
     }
-    terminal_setcursorposition(0, 0);  // Initialize cursor position
+    terminal_setcursorposition(0, 0);
 }
 
 void terminal_setcursorposition(size_t x, size_t y) {
@@ -34,14 +34,12 @@ void terminal_setcursorposition(size_t x, size_t y) {
     outportb(VGA_DATA_PORT, position & 0xFF);
 }
 
-void terminal_getcursorposition(int *x, int *y) {
+void terminal_getcursorposition(size_t *x, size_t *y) {
     uint16_t position;
     
-    // Get the high byte of the position
     outportb(VGA_INDEX_PORT, 0x0E);
     position = inportb(VGA_DATA_PORT) << 8;
     
-    // Get the low byte of the position
     outportb(VGA_INDEX_PORT, 0x0F);
     position |= inportb(VGA_DATA_PORT);
     
