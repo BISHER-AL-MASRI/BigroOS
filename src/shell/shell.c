@@ -6,9 +6,11 @@
 #include "shell/bin/amogus/amogus.h"
 #include "shell/bin/flappy/flappy.h"
 #include "shell/bin/snake/snake.h"
+#include "shell/bin/ls/ls.h"
+#include "shell/bin/cat/cat.h"
 
 #define MAX_INPUT_SIZE 256
-#define MAX_HISTORY_SIZE 10
+#define MAX_HISTORY_SIZE 15
 
 const char *all_commands[] = {
     "echo",
@@ -19,6 +21,8 @@ const char *all_commands[] = {
     "bigroos",
     "snake",
     "shell",
+    "ls",
+    "cat",
     NULL
 };
 
@@ -159,46 +163,40 @@ void user_input(char c)
     }
 }
 
-void execute_command(const char *command)
-{
-    if (compare_strings(command, "clear") == 0)
-    {
+void execute_command(const char *command) {
+    if (compare_strings(command, "clear") == 0) {
         terminal_initialize();
     }
-    else if (starts_with(command, "echo"))
-    {
+    else if (starts_with(command, "echo")) {
         terminal_writestring("\n");
-        terminal_writestring(command + 6);
+        terminal_writestring(command + 5); // Skip "echo "
         terminal_writestring("\n");
     }
-    else if (compare_strings(command, "amogus") == 0)
-    {
+    else if (compare_strings(command, "ls") == 0) {
+        ls(0);
+    }
+    else if (starts_with(command, "cat")) {
+        const char *filename = command + 4; // Skip "ext2read "
+        cat(filename);
+    }
+    else if (compare_strings(command, "amogus") == 0) {
         terminal_writestring(amogus);
     }
-    else if (compare_strings(command, "flappy") == 0)
-    {
+    else if (compare_strings(command, "flappy") == 0) {
         terminal_writestring(flappy);
     }
-    else if (compare_strings(command, "") == 0)
-    {
-        terminal_writestring("\n");
-    }
-    else if (compare_strings(command, "bigroos") == 0)
-    {
+    else if (compare_strings(command, "bigroos") == 0) {
         terminal_writestring(BigroOS);
     }
-    else if (compare_strings(command, "snake") == 0)
-    {
+    else if (compare_strings(command, "snake") == 0) {
         snake_game();
     }
-    else if (compare_strings(command, "shell") == 0)
-    {
+    else if (compare_strings(command, "shell") == 0) {
         terminal_initialize();
         shell_initialize();
         history_position = -1;
     }
-    else if (compare_strings(command, "help") == 0)
-    {
+    else if (compare_strings(command, "help") == 0) {
         terminal_writestring("\n");
         terminal_writestring("echo - prints a string\n");
         terminal_writestring("amogus - prints the amogus\n");
@@ -208,34 +206,12 @@ void execute_command(const char *command)
         terminal_writestring("snake - play the snake game\n");
         terminal_writestring("shell - resets the shell\n");
         terminal_writestring("help - prints this help\n");
+        terminal_writestring("ext2list - lists files in ext2 directory\n");
+        terminal_writestring("ext2read <filename> - reads file from ext2\n");
     }
-    else
-    {
-        terminal_writestring("\n");
-        terminal_writestring("Unknown command: ");
+    else {
+        terminal_writestring("\nUnknown command: ");
         terminal_writestring(command);
         terminal_writestring("\n");
     }
-}
-
-int compare_strings(const char *str1, const char *str2)
-{
-    while (*str1 && *str2 && *str1 == *str2)
-    {
-        str1++;
-        str2++;
-    }
-    return *str1 - *str2;
-}
-
-int starts_with(const char *str, const char *prefix)
-{
-    while (*prefix)
-    {
-        if (*str++ != *prefix++)
-        {
-            return 0;
-        }
-    }
-    return 1;
 }

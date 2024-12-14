@@ -143,3 +143,9 @@ uint8_t terminal_getcolor_at(size_t x, size_t y) {
     const size_t index = y * VGA_WIDTH + x;
     return terminal_buffer[index] >> 8;
 }
+
+void terminal_writeint(int value) {
+    char buffer[16];
+    itoa(value, buffer, 10);
+    terminal_writestring(buffer);
+}
