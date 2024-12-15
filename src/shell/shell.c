@@ -148,20 +148,3 @@ void execute_command(const char *command) {
     terminal_writestring("\n");
   }
 }
-
-int compare_strings(const char *str1, const char *str2) {
-  while (*str1 && *str2 && *str1 == *str2) {
-    str1++;
-    str2++;
-  }
-  return *str1 - *str2;
-}
-
-int starts_with(const char *str, const char *prefix) {
-  while (*prefix) {
-    if (*str++ != *prefix++) {
-      return 0;
-    }
-  }
-  return 1;
-}
