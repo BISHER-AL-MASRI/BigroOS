@@ -165,6 +165,4 @@ static inline unsigned int strlcpy(char *dst, const char *src, unsigned int n) {
 
 char shift_char(char ch);
 
-// Add include for string functions
-
 #endif

@@ -8,4 +8,6 @@
 unsigned long long timer_get();
 void timer_init();
 
+void timer_wait(unsigned int ms);
+
 #endif

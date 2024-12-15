@@ -57,3 +57,23 @@ static void keyboard_handler(struct Registers *regs) {
 void keyboard_init() {
     irq_install(1, keyboard_handler);
 }
+
+
+int keyboard_input_ready(void) {
+    for (int i = 0; i < 128; i++) {
+        if (keyboard.chars[i]) {
+            return 1;  // There is at least one key that was pressed
+        }
+    }
+    return 0;  // No input available
+}
+
+char get_keyboard_input(void) {
+    for (int i = 0; i < 128; i++) {
+        if (keyboard.chars[i]) {
+            keyboard.chars[i] = 0;  // Clear the key press
+            return (char)i;         // Return the key that was pressed
+        }
+    }
+    return 0;  // No key pressed
+}

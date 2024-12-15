@@ -1,0 +1,23 @@
+CompileFlags:
+  Add:
+    - -std=gnu99
+    - -ffreestanding
+    - -O2
+    - -Wall
+    - -Wextra
+    - -nostdlib
+    - -I${SRC}
+    - -target=i686-elf
+    - -c
+
+CompileDatabase:
+  OnDisk: true
+
+Index:
+  Background: Build
+  Threads: 6
+Diagnostics:
+  UnusedIncludes: false
+
+HeaderInsertion:
+  IncludeBlocks: Regroup

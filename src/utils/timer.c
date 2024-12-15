@@ -45,3 +45,8 @@ void timer_init() {
     timer_set(TIMER_TPS);
     irq_install(0, timer_handler);
 }
+
+void timer_wait(unsigned int ms) {
+    unsigned long long start = timer_get();
+    while (timer_get() - start < ms);
+}

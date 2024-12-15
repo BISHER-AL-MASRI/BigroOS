@@ -1,3 +1,11 @@
+# Ignore the root-level bin directory
+/bin/
+
+# Do not ignore the bin directory inside shell
+!shell/bin/
+
+# Ignore notes.txt
 notes.txt
-.vscode
-bin
+
+# Ignore .vscode directory
+.vscode/
