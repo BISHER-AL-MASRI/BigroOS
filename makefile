@@ -7,9 +7,13 @@ C_FILES := $(wildcard $(SRC)/**/*.c $(SRC)/*.c) \
            $(SRC)/shell/bin/snake/snake.c
 
 S_FILES := $(wildcard $(SRC)/**/*.s $(SRC)/*.s)
-OBJ_FILES := $(patsubst $(SRC)/%.c, $(BIN)/%.o, $(C_FILES)) $(patsubst $(SRC)/%.s, $(BIN)/%.o, $(S_FILES))
+
+# Create object files from C and assembly sources
+OBJ_FILES := $(patsubst $(SRC)/%.c, $(BIN)/%.o, $(C_FILES)) \
+             $(patsubst $(SRC)/%.s, $(BIN)/%.o, $(S_FILES)) 
 
 all: $(BIN)/myos.bin
+	@echo "Linking object files: $(OBJ_FILES)"
 
 $(BIN)/%.o: $(SRC)/%.s
 	mkdir -p $(dir $@) # Ensure the output directory exists

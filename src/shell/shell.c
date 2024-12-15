@@ -2,14 +2,13 @@
 #include "vga.h"
 #include "string_utils.h"
 #include "keyboard.h"
-#include "bigroos/bigroos.c"
-#include "bin/snake/snake.c"
+#include "bin/bigroos/bigroos.c"
+#include "bin/snake/snake.h"
 
 #define MAX_INPUT_SIZE 256
 #define MAX_HISTORY_SIZE 10
 
-const char *all_commands[] = {"echo", "clear",
-                              "help", "bigroos", "snake",  NULL};
+const char *all_commands[] = {"echo", "clear", "help", "bigroos", "snake",  NULL};
 
 typedef struct {
   char command[MAX_INPUT_SIZE];
@@ -127,10 +126,6 @@ void execute_command(const char *command) {
     terminal_writestring("\n");
     terminal_writestring(command + 6);
     terminal_writestring("\n");
-  } else if (compare_strings(command, "amogus") == 0) {
-    terminal_writestring(amogus);
-  } else if (compare_strings(command, "flappy") == 0) {
-    terminal_writestring(flappy);
   } else if (compare_strings(command, "snake") == 0) {
     snake_game();
   } else if (compare_strings(command, "") == 0) {
