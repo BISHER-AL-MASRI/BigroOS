@@ -2,33 +2,17 @@
 #include "vga.h"
 #include "string_utils.h"
 #include "keyboard.h"
-#include "shell/bin/bigroos/bigroos.h"
-#include "shell/bin/amogus/amogus.h"
-#include "shell/bin/flappy/flappy.h"
-#include "shell/bin/snake/snake.h"
-#include "shell/bin/ls/ls.h"
-#include "shell/bin/cat/cat.h"
+#include "bigroos/bigroos.c"
+#include "bin/snake/snake.c"
 
 #define MAX_INPUT_SIZE 256
-#define MAX_HISTORY_SIZE 15
+#define MAX_HISTORY_SIZE 10
 
-const char *all_commands[] = {
-    "echo",
-    "amogus",
-    "flappy",
-    "clear",
-    "help",
-    "bigroos",
-    "snake",
-    "shell",
-    "ls",
-    "cat",
-    NULL
-};
+const char *all_commands[] = {"echo", "clear",
+                              "help", "bigroos", "snake",  NULL};
 
-typedef struct
-{
-    char command[MAX_INPUT_SIZE];
+typedef struct {
+  char command[MAX_INPUT_SIZE];
 } CommandHistory;
 
 static CommandHistory command_history[MAX_HISTORY_SIZE];
@@ -38,180 +22,151 @@ static int history_position = -1;
 static char input_buffer[MAX_INPUT_SIZE];
 static int input_position = 0;
 
-void shell_initialize(void)
-{
-    terminal_initialize();
-    terminal_writestring(BigroOS);
-    terminal_writestring("BigroOS Shell Initialized\n");
-    terminal_writestring("> ");
+void shell_initialize(void) {
+  terminal_initialize();
+  terminal_writestring(BigroOS);
+  terminal_writestring("BigroOS Shell Initialized\n");
+  terminal_writestring("> ");
 }
 
-void user_input(char c)
-{
-    static int escape_sequence = 0;
-    if (escape_sequence == 0 && c == '\033')
-    {
-        escape_sequence = 1;
-        return;
-    }
-    if (escape_sequence == 1 && c == '[')
-    {
-        escape_sequence = 2;
-        return;
-    }
+void user_input(char c) {
+  static int escape_sequence = 0;
+  if (escape_sequence == 0 && c == '\033') {
+    escape_sequence = 1;
+    return;
+  }
+  if (escape_sequence == 1 && c == '[') {
+    escape_sequence = 2;
+    return;
+  }
 
-    if (c == KEY_UP)
-    {
-        if (history_position < history_count - 1)
-        {
-            while (input_position > 0)
-            {
-                terminal_backspace();
-                input_position--;
-            }
-            history_position++;
-            strcpy(input_buffer, command_history[history_position].command);
-            input_position = strlen(input_buffer);
-            terminal_writestring(input_buffer);
+  if (c == KEY_UP) {
+    if (history_position < history_count - 1) {
+      while (input_position > 0) {
+        terminal_backspace();
+        input_position--;
+      }
+      history_position++;
+      strcpy(input_buffer, command_history[history_position].command);
+      input_position = strlen(input_buffer);
+      terminal_writestring(input_buffer);
+    }
+    return;
+  }
+
+  if (c == '\t') {
+    input_buffer[input_position] = '\0';
+    for (int i = 0; all_commands[i] != NULL; i++) {
+      if (starts_with(all_commands[i], input_buffer)) {
+        while (input_position > 0) {
+          terminal_backspace();
+          input_position--;
         }
-        return;
+        strcpy(input_buffer, all_commands[i]);
+        input_position = strlen(input_buffer);
+        terminal_writestring(input_buffer);
+        break;
+      }
     }
+    return;
+  }
 
-    if (c == '\t')
-    {
-        input_buffer[input_position] = '\0';
-        for (int i = 0; all_commands[i] != NULL; i++)
-        {
-            if (starts_with(all_commands[i], input_buffer))
-            {
-                while (input_position > 0)
-                {
-                    terminal_backspace();
-                    input_position--;
-                }
-                strcpy(input_buffer, all_commands[i]);
-                input_position = strlen(input_buffer);
-                terminal_writestring(input_buffer);
-                break;
-            }
+  else if (c == KEY_DOWN) {
+    if (history_position >= 0) {
+      while (input_position > 0) {
+        terminal_backspace();
+        input_position--;
+      }
+      history_position--;
+      if (history_position >= 0) {
+        strcpy(input_buffer, command_history[history_position].command);
+        input_position = strlen(input_buffer);
+        terminal_writestring(input_buffer);
+      }
+    }
+    return;
+  }
+
+  if (c == '\n') {
+    input_buffer[input_position] = '\0';
+
+    if (input_position > 0) {
+      if (history_count >= MAX_HISTORY_SIZE) {
+        for (int i = MAX_HISTORY_SIZE - 1; i > 0; i--) {
+          strcpy(command_history[i].command, command_history[i - 1].command);
         }
-        return;
-    }
-
-    else if (c == KEY_DOWN)
-    {
-        if (history_position >= 0)
-        {
-            while (input_position > 0)
-            {
-                terminal_backspace();
-                input_position--;
-            }
-            history_position--;
-            if (history_position >= 0)
-            {
-                strcpy(input_buffer, command_history[history_position].command);
-                input_position = strlen(input_buffer);
-                terminal_writestring(input_buffer);
-            }
+        history_count = MAX_HISTORY_SIZE;
+      } else {
+        for (int i = history_count; i > 0; i--) {
+          strcpy(command_history[i].command, command_history[i - 1].command);
         }
-        return;
+        history_count++;
+      }
+      strcpy(command_history[0].command, input_buffer);
     }
 
-    if (c == '\n')
-    {
-        input_buffer[input_position] = '\0';
-
-        if (input_position > 0)
-        {
-            if (history_count >= MAX_HISTORY_SIZE)
-            {
-                for (int i = MAX_HISTORY_SIZE - 1; i > 0; i--)
-                {
-                    strcpy(command_history[i].command, command_history[i - 1].command);
-                }
-                history_count = MAX_HISTORY_SIZE;
-            }
-            else
-            {
-                for (int i = history_count; i > 0; i--)
-                {
-                    strcpy(command_history[i].command, command_history[i - 1].command);
-                }
-                history_count++;
-            }
-            strcpy(command_history[0].command, input_buffer);
-        }
-
-        execute_command(input_buffer);
-        input_position = 0;
-        history_position = -1;
-        terminal_writestring("> ");
+    execute_command(input_buffer);
+    input_position = 0;
+    history_position = -1;
+    terminal_writestring("> ");
+  } else if (c == '\b') {
+    if (input_position > 0) {
+      terminal_backspace();
+      input_position--;
     }
-    else if (c == '\b')
-    {
-        if (input_position > 0)
-        {
-            terminal_backspace();
-            input_position--;
-        }
-    }
-    else if (input_position < MAX_INPUT_SIZE - 1)
-    {
-        input_buffer[input_position++] = c;
-        terminal_putchar(c);
-    }
+  } else if (input_position < MAX_INPUT_SIZE - 1) {
+    input_buffer[input_position++] = c;
+    terminal_putchar(c);
+  }
 }
 
 void execute_command(const char *command) {
-    if (compare_strings(command, "clear") == 0) {
-        terminal_initialize();
+  if (compare_strings(command, "clear") == 0) {
+    terminal_initialize();
+  } else if (starts_with(command, "echo")) {
+    terminal_writestring("\n");
+    terminal_writestring(command + 6);
+    terminal_writestring("\n");
+  } else if (compare_strings(command, "amogus") == 0) {
+    terminal_writestring(amogus);
+  } else if (compare_strings(command, "flappy") == 0) {
+    terminal_writestring(flappy);
+  } else if (compare_strings(command, "snake") == 0) {
+    snake_game();
+  } else if (compare_strings(command, "") == 0) {
+    terminal_writestring("\n");
+  } else if (compare_strings(command, "bigroos") == 0) {
+    terminal_writestring(BigroOS);
+  } else if (compare_strings(command, "help") == 0) {
+    terminal_writestring("\n");
+    terminal_writestring("echo - prints a string\n");
+    terminal_writestring("amogus - prints the amogus\n");
+    terminal_writestring("flappy - prints the flappy bird\n");
+    terminal_writestring("clear - clears the screen\n");
+    terminal_writestring("help - prints this help\n");
+    terminal_writestring("bigroos - prints the BigroOs startup message\n");
+    terminal_writestring("snake - play the snake game\n");
+  } else {
+    terminal_writestring("\n");
+    terminal_writestring("Unknown command: ");
+    terminal_writestring(command);
+    terminal_writestring("\n");
+  }
+}
+
+int compare_strings(const char *str1, const char *str2) {
+  while (*str1 && *str2 && *str1 == *str2) {
+    str1++;
+    str2++;
+  }
+  return *str1 - *str2;
+}
+
+int starts_with(const char *str, const char *prefix) {
+  while (*prefix) {
+    if (*str++ != *prefix++) {
+      return 0;
     }
-    else if (starts_with(command, "echo")) {
-        terminal_writestring("\n");
-        terminal_writestring(command + 5); // Skip "echo "
-        terminal_writestring("\n");
-    }
-    else if (compare_strings(command, "ls") == 0) {
-        ls(0);
-    }
-    else if (starts_with(command, "cat")) {
-        const char *filename = command + 4; // Skip "ext2read "
-        cat(filename);
-    }
-    else if (compare_strings(command, "amogus") == 0) {
-        terminal_writestring(amogus);
-    }
-    else if (compare_strings(command, "flappy") == 0) {
-        terminal_writestring(flappy);
-    }
-    else if (compare_strings(command, "bigroos") == 0) {
-        terminal_writestring(BigroOS);
-    }
-    else if (compare_strings(command, "snake") == 0) {
-        snake_game();
-    }
-    else if (compare_strings(command, "shell") == 0) {
-        terminal_initialize();
-        shell_initialize();
-        history_position = -1;
-    }
-    else if (compare_strings(command, "help") == 0) {
-        terminal_writestring("\n");
-        terminal_writestring("echo - prints a string\n");
-        terminal_writestring("amogus - prints the amogus\n");
-        terminal_writestring("flappy - prints the flappy bird\n");
-        terminal_writestring("clear - clears the screen\n");
-        terminal_writestring("bigroos - prints the BigroOs startup message\n");
-        terminal_writestring("snake - play the snake game\n");
-        terminal_writestring("shell - resets the shell\n");
-        terminal_writestring("help - prints this help\n");
-        terminal_writestring("ext2list - lists files in ext2 directory\n");
-        terminal_writestring("ext2read <filename> - reads file from ext2\n");
-    }
-    else {
-        terminal_writestring("\nUnknown command: ");
-        terminal_writestring(command);
-        terminal_writestring("\n");
-    }
+  }
+  return 1;
 }

@@ -3,13 +3,8 @@ SRC = src
 BIN = bin
 
 C_FILES := $(wildcard $(SRC)/**/*.c $(SRC)/*.c) \
-           $(SRC)/shell/bin/amogus/amogus.c \
            $(SRC)/shell/bin/bigroos/bigroos.c \
-           $(SRC)/shell/bin/flappy/flappy.c \
-           $(SRC)/shell/bin/snake/snake.c \
-		   $(SRC)/shell/bin/ls/ls.c \
-		   $(SRC)/shell/bin/cat/cat.c \
-		   $(SRC)/utils/ext2/ext2.c \
+           $(SRC)/shell/bin/snake/snake.c
 
 S_FILES := $(wildcard $(SRC)/**/*.s $(SRC)/*.s)
 OBJ_FILES := $(patsubst $(SRC)/%.c, $(BIN)/%.o, $(C_FILES)) $(patsubst $(SRC)/%.s, $(BIN)/%.o, $(S_FILES))

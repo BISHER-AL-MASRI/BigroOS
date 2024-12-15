@@ -14,9 +14,9 @@ A 32 bit kernel
 - [x] Simple Kernel
 - [x] Get Input from Keyboard
 - [x] Add More Keyboard Input like arrow keys
-- [x] Create a Shell
-- [x] Simple snake game
 - [ ] Get Input from Mouse
+- [x] Create a Shell
+- [ ] Simple snake game
 - [ ] Storage
 - [ ] Implement ext4 filesystem (and might make my own)
 - [ ] Simple text editor
