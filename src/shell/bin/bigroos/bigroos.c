@@ -1,4 +1,4 @@
-#define BigroOS                                                                \
+const char* BigroOS   =                                                        \
   "\n"                                                                         \
   " ____  _                  ___  ____  \n"                                    \
   "| __ )(_) __ _ _ __ ___  / _ \\/ ___| \n"                                   \
@@ -9,4 +9,4 @@
   "\n"                                                                         \
   "By Bisher Almasri\n"                                                        \
   "Version 0.0.1\n"                                                            \
-  "\n"
+  "\n";

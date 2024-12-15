@@ -161,5 +161,6 @@ void snake_game() {
     char score[10];
     itoa(snake.length - 3, score, 10);
     terminal_writestring(score);
+    terminal_writestring("\n");
 
 }
