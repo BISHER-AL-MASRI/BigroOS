@@ -52,7 +52,7 @@ void terminal_setcolor(uint8_t color) {
 }
 
 void terminal_backspace(void) {
-    int x, y;
+    size_t x, y;  // Changed from int to size_t
     terminal_getcursorposition(&x, &y);
     if (x > 0) {
         x--;
@@ -70,7 +70,7 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 }
 
 void terminal_putchar(char c) {
-    int x, y;
+    size_t x, y;  // Changed from int to size_t
     terminal_getcursorposition(&x, &y);
     
     terminal_putentryat(c, terminal_color, x, y);
@@ -78,7 +78,7 @@ void terminal_putchar(char c) {
         x = 0;
         if (++y == VGA_HEIGHT) {
             y = VGA_HEIGHT - 1;
-            scroll_up();  // Scroll up if at bottom
+            scroll_up();
         }
     }
 
@@ -88,12 +88,12 @@ void terminal_putchar(char c) {
 void terminal_write(const char* data, size_t size) {
     for (size_t i = 0; i < size; i++) {
         if (data[i] == '\n') {
-            int x, y;
+            size_t x, y;  // Changed from int to size_t
             terminal_getcursorposition(&x, &y);
             x = 0;
             if (++y == VGA_HEIGHT) {
                 y = VGA_HEIGHT - 1;
-                scroll_up();  // Scroll up if at bottom
+                scroll_up();
             }
             terminal_setcursorposition(x, y);
             continue;
@@ -120,7 +120,7 @@ void scroll_up(void) {
         terminal_putentryat(' ', vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_DARK_GREY), x, VGA_HEIGHT - 1);
     }
 
-    int x, y;
+    size_t x, y;  // Changed from int to size_t
     terminal_getcursorposition(&x, &y);
     if (y >= VGA_HEIGHT) {
         y = VGA_HEIGHT - 1;

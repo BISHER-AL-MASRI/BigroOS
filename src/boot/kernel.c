@@ -7,26 +7,32 @@
 #include "utils/timer.h"
 #include "utils/util.h"
 #include "shell/shell.h"
+#include "fs/ext2/ext2.h"
 
 #define FPS 30
 
 void kernel_main(void) {
-	idt_init();
+    idt_init();
     isr_init();
     irq_init();
-	terminal_initialize();
-	timer_init();
+    terminal_initialize();
+    timer_init();
     keyboard_init();
-	shell_initialize();
+    
+    // Initialize filesystem
+    if (ext2_init() != 0) {
+        terminal_writestring("Failed to initialize filesystem\n");
+    }
+    
+    shell_initialize();
+    
+    unsigned int last_frame = 0, last = 0;  // Removed unused last_key_press
+    char LastKeys[128] = { 0 };
 
-
-    unsigned int last_frame = 0, last = 0, last_key_press = 0;
-	char LastKeys[128] = { 0 };
-
-	while(true) {
-		unsigned int x,y;
-		terminal_getcursorposition(&x, &y);
-		const unsigned int now = (unsigned int) timer_get();
+    while(true) {
+        size_t x, y;  // Changed from unsigned int to size_t
+        terminal_getcursorposition(&x, &y);
+        const unsigned int now = (unsigned int) timer_get();
 
         if (now != last) {
             last = now;
